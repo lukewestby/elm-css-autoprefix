@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const filePath = path.join(__dirname, './src/Css/Autoprefixer/Data.elm');
+const filePath = path.resolve(__dirname, '../src/Css/Autoprefixer/Data.elm');
 
 const emptyFile = () => {
   return new Promise((resolve, reject) => {
