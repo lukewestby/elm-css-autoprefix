@@ -22,30 +22,37 @@ const appendData = (data) => {
 }
 
 const appendFileIntro = () => {
-  return appendData('module Css.Autoprefixer.Data where');
-};
+  const data =
+`module Css.Autoprefixer.Data where
+
+import Css.Autoprefixer.Stats as Stats`
+
+  return appendData(data);
+}
 
 const appendItem = (variableName, data) => {
   return appendData(`
 
-${variableName} : String
+
+${variableName} : List Stats.BrowserSupport
 ${variableName} =
-  """
+  Stats.parseStats <|
+    """
 ${JSON.stringify(data)}
-  """`);
-};
+    """`)
+}
 
 const execute = async () => {
   try {
-    await emptyFile();
-    await appendFileIntro();
+    await emptyFile()
+    await appendFileIntro()
     await Promise.all(Object.keys(importMap).map((key) => {
-      const data = require(importMap[key]).stats;
-      return appendItem(key, data);
-    }));
+      const data = require(importMap[key]).stats
+      return appendItem(key, data)
+    }))
   } catch (error) {
     console.log('failed to generate code:')
-    console.log(error.message);
+    console.log(error.message)
   }
 }
 
