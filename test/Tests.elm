@@ -1,38 +1,41 @@
 module Tests where
 
+import String
 import ElmTest exposing (..)
-import Css.Autoprefixer exposing (filteredBoxShadowStats)
+import Css exposing (..)
+import Css.Elements as El
+import Css.Autoprefix exposing (autoprefix)
+import Css.Autoprefix.Presets exposing (everything)
 
 
 all : Test
 all =
   suite "A Test Suite"
-    [ test "filteredTest" filteredTest
-    ]
+    [ test "first test" firstTest ]
 
-filteredTest =
+
+firstTest : Assertion
+firstTest =
   let
+    actual =
+      prettyPrint <|
+        (Css.stylesheet << (autoprefix everything))
+          [ El.div [ (property "align-content" "flex-end") ]
+          ]
+
     expected =
-      [ ("firefox", "3.5", "y x")
-      , ("firefox", "3.6", "y x")
-      , ("chrome", "4", "y x")
-      , ("chrome", "5", "y x")
-      , ("chrome", "6", "y x")
-      , ("chrome", "7", "y x")
-      , ("chrome", "8", "y x")
-      , ("chrome", "9", "y x")
-      , ("safari", "3.1", "a x #1")
-      , ("safari", "3.2", "a x #1")
-      , ("safari", "4", "a x #1")
-      , ("safari", "5", "y x")
-      , ("ios_saf", "3.2", "a x #1")
-      , ("ios_saf", "4.0-4.1", "y x")
-      , ("ios_saf", "4.2-4.3", "y x")
-      , ("android", "2.1", "a x #1")
-      , ("android", "2.2", "a x #1")
-      , ("android", "2.3", "a x #1")
-      , ("android", "3", "a x #1")
-      , ("bb", "7", "y x")
-      ]
+      "div {\n    -ms-flex-line-pack: end;\n    align-content: flex-end;\n}"
   in
-    assertionList (List.reverse expected) filteredBoxShadowStats
+    assertEqual actual expected
+
+
+prettyPrint : Css.Stylesheet -> String
+prettyPrint sheet =
+  let
+    { warnings, css } =
+      Css.compile sheet
+  in
+    if List.isEmpty warnings then
+      css
+    else
+      "Invalid Stylesheet:\n" ++ (String.join "\n" warnings)
