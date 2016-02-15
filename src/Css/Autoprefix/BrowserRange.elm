@@ -9,6 +9,7 @@ module Css.Autoprefix.BrowserRange
 
 import String
 
+
 type Vendor
   = InternetExplorer
   | InternetExplorerMobile

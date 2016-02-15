@@ -1,8 +1,5 @@
 module Css.Autoprefix.Transform
-  ( TransformOperation(..)
-  , Transform
-  , singleTransform
-  , multiTransform
+  ( Transform
   , transform
   , execute
   ) where
@@ -11,36 +8,21 @@ import Css.Preprocess exposing (Property)
 import Css.Autoprefix.BrowserRange exposing (BrowserRange)
 
 
-type TransformOperation
-  = SingleTransform (Property -> Property)
-  | MultiTransform (Property -> List Property)
-
 
 type alias Transform =
   { ranges : List BrowserRange
-  , operation : TransformOperation
+  , operations : List (Property -> List Property)
   }
 
 
-execute : Property -> TransformOperation -> List Property
-execute property operation =
-  case operation of
-    SingleTransform fn ->
-      [fn property]
-    MultiTransform fn ->
-      fn property
-
-
-singleTransform : (Property -> Property) -> TransformOperation
-singleTransform =
-  SingleTransform
-
-
-multiTransform : (Property -> List Property) -> TransformOperation
-multiTransform =
-  MultiTransform
-
-
-transform : List BrowserRange -> TransformOperation -> Transform
+transform : List BrowserRange -> List (Property -> List Property) -> Transform
 transform =
   Transform
+
+
+execute : Property -> List (Property -> List Property) -> List Property
+execute property operations =
+  List.foldl
+    (\nextOp result -> List.concatMap nextOp result)
+    ([property])
+    (operations)

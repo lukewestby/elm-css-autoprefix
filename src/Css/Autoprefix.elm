@@ -17,7 +17,7 @@ import Css.Preprocess exposing (..)
 keyTransforms : Dict String (List Transform)
 keyTransforms =
   Dict.fromList
-    [ ("align-content", [AlignContent.backport2012IE]) ]
+    [ ("align-content", [AlignContent.backport2012]) ]
 
 
 type alias Config =
@@ -104,6 +104,7 @@ processProperty config property =
       Dict.get property.key keyTransforms
         |> Maybe.withDefault []
         |> List.filter (.ranges >> (anyOverlap config))
-        |> List.concatMap (.operation >> (Transform.execute property))
+        |> List.map .operations
+        |> List.concatMap (Transform.execute property)
   in
     List.concat [keyProps, [property]]
